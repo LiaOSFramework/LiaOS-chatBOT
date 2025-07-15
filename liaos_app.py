@@ -1,6 +1,6 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
-import threading  # ✅ ini yang penting untuk jalankan paralel
+import threading  # ✅ untuk jalankan bot paralel
 import streamlit as st
 from openai import OpenAI
 import os
@@ -52,6 +52,10 @@ for msg in st.session_state.chat_history:
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_MODE = os.getenv("TELEGRAM_MODE", "OFF")
 
+# ✅ DEBUG: cek apakah env terbaca
+print("🔍 DEBUG TELEGRAM_TOKEN =", TELEGRAM_TOKEN)
+print("🔍 DEBUG TELEGRAM_MODE =", TELEGRAM_MODE)
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Halo! Aku LiaOS 🤖, siap menemani kamu berbicara!")
 
@@ -74,6 +78,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def run_telegram_bot():
     if TELEGRAM_TOKEN:
+        print("✅ Memulai Telegram bot polling...")
         app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
         app.add_handler(CommandHandler("start", start))
         app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
@@ -84,4 +89,7 @@ def run_telegram_bot():
 
 # ✅ Jalankan Telegram bot paralel, tanpa ganggu Streamlit
 if TELEGRAM_MODE == "ON":
+    print("🔄 TELEGRAM_MODE = ON → Start bot in background...")
     threading.Thread(target=run_telegram_bot, daemon=True).start()
+else:
+    print("❌ TELEGRAM_MODE bukan ON, bot tidak dijalankan")
