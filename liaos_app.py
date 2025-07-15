@@ -1,6 +1,6 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
-import asyncio
+import threading  # ✅ Tambah ini
 import streamlit as st
 from openai import OpenAI
 import os
@@ -82,6 +82,7 @@ def run_telegram_bot():
     else:
         print("⚠️ TELEGRAM_TOKEN tidak ditemukan, bot Telegram tidak dijalankan.")
 
-# Jalankan Telegram bot hanya jika mode ON
+# ✅ GANTI bagian ini, pakai threading biar ga bentrok sama Streamlit
 if TELEGRAM_MODE == "ON":
-    asyncio.get_event_loop().create_task(asyncio.to_thread(run_telegram_bot()))
+    telegram_thread = threading.Thread(target=run_telegram_bot, daemon=True)
+    telegram_thread.start()
