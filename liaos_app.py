@@ -1,6 +1,6 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
-import threading  # ✅ Tambah ini
+import threading  # ✅ ini yang penting untuk jalankan paralel
 import streamlit as st
 from openai import OpenAI
 import os
@@ -82,6 +82,6 @@ def run_telegram_bot():
     else:
         print("⚠️ TELEGRAM_TOKEN tidak ditemukan, bot Telegram tidak dijalankan.")
 
+# ✅ Jalankan Telegram bot paralel, tanpa ganggu Streamlit
 if TELEGRAM_MODE == "ON":
-    telegram_thread = threading.Thread(target=run_telegram_bot, daemon=True)
-    telegram_thread.start()
+    threading.Thread(target=run_telegram_bot, daemon=True).start()
